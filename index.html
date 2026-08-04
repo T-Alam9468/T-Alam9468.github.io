@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Towhid Alam — IT Support &amp; Security Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0E11;
+    --panel:#10151B;
+    --panel-2:#141B22;
+    --line:#232C34;
+    --text:#D7E0E6;
+    --muted:#7C8A96;
+    --green:#5FD98A;
+    --amber:#F2B84B;
+    --red:#E2604F;
+    --mono:'JetBrains Mono', monospace;
+    --sans:'Inter', sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    overflow-x:hidden;
+  }
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px;}
+
+  /* ---- scanline ambience ---- */
+  .scan{
+    position:fixed; inset:0; pointer-events:none; z-index:50;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+  }
+
+  /* ---- top bar ---- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:40;
+    background:rgba(11,14,17,0.85); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 28px; max-width:1080px; margin:0 auto;}
+  .brand{font-family:var(--mono); font-weight:600; font-size:14px; letter-spacing:0.5px;}
+  .brand .dot{color:var(--green);}
+  nav ul{display:flex; gap:28px; list-style:none;}
+  nav ul li a{font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:0.5px; transition:color .2s;}
+  nav ul li a:hover{color:var(--green);}
+  @media (max-width:680px){ nav ul{gap:14px;} nav ul li a{font-size:10.5px;} }
+
+  /* ---- log ticker ---- */
+  .ticker-outer{
+    margin-top:64px;
+    border-bottom:1px solid var(--line);
+    background:var(--panel);
+    overflow:hidden;
+    white-space:nowrap;
+    position:relative;
+    height:34px;
+    display:flex;
+    align-items:center;
+  }
+  .ticker-track{
+    display:inline-flex;
+    gap:48px;
+    animation:scrollLeft 38s linear infinite;
+    font-family:var(--mono); font-size:11.5px; color:var(--muted);
+    padding-left:100%;
+  }
+  .ticker-track span.ok{color:var(--green);}
+  .ticker-track span.warn{color:var(--amber);}
+  @keyframes scrollLeft{ from{transform:translateX(0);} to{transform:translateX(-100%);} }
+
+  /* ---- hero ---- */
+  .hero{
+    padding:90px 0 70px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-glow{
+    position:absolute; top:-200px; right:-200px; width:600px; height:600px;
+    background:radial-gradient(circle, rgba(95,217,138,0.10), transparent 70%);
+    pointer-events:none; z-index:0;
+    transition:transform .3s ease-out;
+  }
+  .hero-glow.two{
+    top:auto; right:auto; bottom:-260px; left:-160px; width:500px; height:500px;
+    background:radial-gradient(circle, rgba(242,184,75,0.07), transparent 70%);
+  }
+  .hero .wrap{position:relative; z-index:1;}
+  .parallax-layer{transition:transform .25s ease-out; will-change:transform;}
+  .hero-tag{
+    font-family:var(--mono); font-size:12px; color:var(--green);
+    letter-spacing:1.5px; text-transform:uppercase; margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .hero-tag .blip{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 0 rgba(95,217,138,0.6); animation:pulse 2s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(95,217,138,0.5);}
+    70%{box-shadow:0 0 0 8px rgba(95,217,138,0);}
+    100%{box-shadow:0 0 0 0 rgba(95,217,138,0);}
+  }
+  h1{
+    font-family:var(--mono); font-weight:700;
+    font-size:clamp(34px, 6vw, 64px);
+    line-height:1.05; letter-spacing:-1px;
+    max-width:820px;
+  }
+  h1 .cursor{display:inline-block; width:3px; height:0.85em; background:var(--green); margin-left:6px; vertical-align:-0.05em; animation:blink 1s steps(1) infinite;}
+  @keyframes blink{ 50%{opacity:0;} }
+  .hero p.sub{
+    margin-top:22px; max-width:600px; color:var(--muted); font-size:16px;
+  }
+  .hero-actions{display:flex; gap:14px; margin-top:34px; flex-wrap:wrap;}
+  .btn{
+    font-family:var(--mono); font-size:13px; padding:12px 20px;
+    border:1px solid var(--line); border-radius:3px; transition:all .2s;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn.primary{background:var(--green); color:#06140C; border-color:var(--green); font-weight:600;}
+  .btn.primary:hover{background:#79e6a0;}
+  .btn.ghost:hover{border-color:var(--green); color:var(--green);}
+
+  /* ---- terminal panel in hero ---- */
+  .term{
+    margin-top:56px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    max-width:620px;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);
+  }
+  .term-bar{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 14px; border-bottom:1px solid var(--line);
+  }
+  .term-bar .dotc{width:10px; height:10px; border-radius:50%;}
+  .term-bar .r{background:#E2604F;} .term-bar .y{background:#F2B84B;} .term-bar .g{background:#5FD98A;}
+  .term-bar span.title{margin-left:8px; font-family:var(--mono); font-size:11px; color:var(--muted);}
+  .term-body{padding:18px 16px; font-family:var(--mono); font-size:13px; color:var(--text);}
+  .term-body .line{margin-bottom:6px;}
+  .term-body .prompt{color:var(--green);}
+  .term-body .out{color:var(--muted); padding-left:18px;}
+
+  /* ---- section shell ---- */
+  section{padding:64px 0; border-bottom:1px solid var(--line);}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:36px;}
+  .sec-head .idx{font-family:var(--mono); color:var(--green); font-size:13px;}
+  .sec-head h2{font-family:var(--mono); font-size:22px; letter-spacing:-0.3px; text-transform:uppercase;}
+  .sec-head .rule{flex:1; height:1px; background:var(--line);}
+
+  .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+
+  /* ---- experience: incident log style ---- */
+  .log{border-left:1px solid var(--line); margin-left:6px;}
+  .log-item{position:relative; padding:0 0 36px 28px;}
+  .log-item:last-child{padding-bottom:0;}
+  .log-item::before{
+    content:""; position:absolute; left:-5px; top:4px; width:9px; height:9px;
+    border-radius:50%; background:var(--bg); border:2px solid var(--green);
+  }
+  .log-meta{font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:0.5px; margin-bottom:6px;}
+  .log-meta .status{color:var(--amber);}
+  .log-item h3{font-size:18px; font-weight:600; margin-bottom:4px;}
+  .log-item .org{color:var(--muted); font-size:13.5px; margin-bottom:12px;}
+  .log-item ul{padding-left:18px; color:var(--text); font-size:14.5px;}
+  .log-item ul li{margin-bottom:6px; color:#BFC9D0;}
+  .log-item ul li::marker{color:var(--green);}
+
+  /* ---- skills: status grid ---- */
+  .grid-skills{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:14px;}
+  .skill-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:5px; padding:18px 18px 16px;
+    transition:border-color .2s, transform .2s;
+  }
+  .skill-card:hover{border-color:var(--green); transform:translateY(-2px);}
+  .skill-card .label{font-family:var(--mono); font-size:11px; color:var(--green); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; display:flex; justify-content:space-between;}
+  .skill-card .label .status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);}
+  .skill-card p{font-size:13.5px; color:#BFC9D0; line-height:1.6;}
+
+  /* ---- projects: case files ---- */
+  .case-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:18px;}
+  .case{
+    background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden;
+    transition:transform .25s, border-color .25s;
+  }
+  .case:hover{transform:translateY(-4px); border-color:var(--green);}
+  .case-head{
+    padding:14px 18px; border-bottom:1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:var(--mono); font-size:11px; color:var(--muted);
+  }
+  .case-head .tag{color:var(--amber);}
+  .case-body{padding:18px;}
+  .case-body h3{font-size:16.5px; margin-bottom:10px;}
+  .case-body p{font-size:13.5px; color:#BFC9D0;}
+  .case-body .evt{
+    margin-top:14px; font-family:var(--mono); font-size:11px; color:var(--muted);
+    background:var(--bg); border:1px solid var(--line); padding:8px 10px; border-radius:4px;
+  }
+  .case-body .evt b{color:var(--red);}
+
+  /* ---- education / certs ---- */
+  .twocol{display:grid; grid-template-columns:1.2fr 1fr; gap:40px;}
+  @media (max-width:760px){.twocol{grid-template-columns:1fr;}}
+  .edu-item{margin-bottom:26px;}
+  .edu-item:last-child{margin-bottom:0;}
+  .edu-item .gpa{font-family:var(--mono); color:var(--green); font-size:12px;}
+  .edu-item h3{font-size:16px; margin:6px 0 2px;}
+  .edu-item .org{color:var(--muted); font-size:13px;}
+  .cert{display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .cert:last-child{border-bottom:none;}
+  .cert .badge{font-family:var(--mono); font-size:10.5px; padding:3px 8px; border-radius:3px; border:1px solid var(--line); color:var(--muted);}
+  .cert .badge.active{color:var(--green); border-color:var(--green);}
+  .cert .badge.progress{color:var(--amber); border-color:var(--amber);}
+
+  /* ---- contact ---- */
+  .contact{
+    text-align:center; padding:80px 0;
+  }
+  .contact h2{font-family:var(--mono); font-size:clamp(26px,4vw,40px); margin-bottom:16px;}
+  .contact p{color:var(--muted); margin-bottom:30px;}
+  .contact-links{display:flex; justify-content:center; gap:14px; flex-wrap:wrap;}
+
+  footer{padding:24px 0; text-align:center; font-family:var(--mono); font-size:11px; color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="scan"></div>
+
+<header>
+  <div class="nav">
+    <div class="brand">towhid<span class="dot">@</span>secops<span class="dot">:~$</span></div>
+    <nav>
+      <ul>
+        <li><a href="#experience">experience</a></li>
+        <li><a href="#skills">skills</a></li>
+        <li><a href="#projects">projects</a></li>
+        <li><a href="#education">education</a></li>
+        <li><a href="#contact">contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="ticker-outer">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<section class="hero" id="hero">
+  <div class="hero-glow" id="glow1"></div>
+  <div class="hero-glow two" id="glow2"></div>
+  <div class="wrap">
+    <div class="hero-tag parallax-layer" data-depth="6"><span class="blip"></span> STATUS: AVAILABLE — TIER 1 / SOC TRACK</div>
+    <h1 class="parallax-layer" data-depth="14">Keeping systems online,<br>watching what gets through.<span class="cursor"></span></h1>
+    <p class="sub parallax-layer" data-depth="4">I'm Towhid Alam — an IT support specialist moving into security operations. I troubleshoot the everyday breakages and build the lab work to catch the ones that aren't everyday at all.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#contact">Get in touch →</a>
+      <a class="btn ghost" href="#projects">View case files</a>
+    </div>
+
+    <div class="term reveal parallax-layer" id="term" data-depth="20">
+      <div class="term-bar">
+        <div class="dotc r"></div><div class="dotc y"></div><div class="dotc g"></div>
+        <span class="title">whoami.sh</span>
+      </div>
+      <div class="term-body">
+        <div class="line"><span class="prompt">$</span> whoami</div>
+        <div class="out">towhid_alam — IT Support Specialist, MS Cybersecurity @ NYU Tandon</div>
+        <div class="line"><span class="prompt">$</span> cat skills.txt | head -3</div>
+        <div class="out">TCP/IP · DNS · VPN · Active Directory · Splunk · Wireshark</div>
+        <div class="line"><span class="prompt">$</span> uptime --in-it</div>
+        <div class="out">3+ years resolving tickets, securing endpoints, never going down</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">01</span><h2>Experience Log</h2><div class="rule"></div></div>
+    <div class="log">
+      <div class="log-item reveal">
+        <div class="log-meta">SEP 2024 — PRESENT · <span class="status">ACTIVE</span></div>
+        <h3>Shift Supervisor</h3>
+        <div class="org">CVS Health, Manhattan, NY · Full-Time</div>
+        <ul>
+          <li>Provide frontline support across 100–200+ customers per shift in a high-volume retail environment</li>
+          <li>Coordinate inventory operations — stock replenishment, merchandising execution, backroom organization</li>
+          <li>Troubleshoot POS systems, printers, scanners, and handheld devices to keep the floor running</li>
+          <li>Train team members on operational procedure, technology use, and service standards</li>
+        </ul>
+      </div>
+      <div class="log-item reveal">
+        <div class="log-meta">APR 2021 — JUN 2023 · <span class="status">CLOSED</span></div>
+        <h3>IT Support Specialist</h3>
+        <div class="org">Binary Cloth, Dhaka, Bangladesh · Part-Time</div>
+        <ul>
+          <li>Delivered Tier 1 support to 50+ end users, remote and in-person, across Windows environments</li>
+          <li>Resolved 10+ tickets per day using standard troubleshooting workflows</li>
+          <li>Diagnosed TCP/IP, DNS, VPN, and remote access issues to minimize user downtime</li>
+          <li>Managed accounts, patching, and configuration across 100+ endpoints</li>
+          <li>Flagged recurring issues and contributed to internal documentation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">02</span><h2>Skill Inventory</h2><div class="rule"></div></div>
+    <div class="grid-skills">
+      <div class="skill-card reveal"><div class="label">Networking <span class="status-dot"></span></div><p>TCP/IP, DNS, VPN, remote access, ports & protocols, network troubleshooting</p></div>
+      <div class="skill-card reveal"><div class="label">Systems & Support <span class="status-dot"></span></div><p>Help desk ticketing, endpoint configuration, patching, remote & on-site support, hardware/software diagnostics</p></div>
+      <div class="skill-card reveal"><div class="label">Security Tools <span class="status-dot"></span></div><p>Wireshark, Splunk, log analysis, detection queries</p></div>
+      <div class="skill-card reveal"><div class="label">Administration <span class="status-dot"></span></div><p>Active Directory, Azure Fundamentals</p></div>
+      <div class="skill-card reveal"><div class="label">OS & Platforms <span class="status-dot"></span></div><p>Windows 10/11, Windows Server (basic), Linux, VirtualBox, VMware</p></div>
+      <div class="skill-card reveal"><div class="label">Scripting <span class="status-dot"></span></div><p>Python (basic), PowerShell (basic)</p></div>
+      <div class="skill-card reveal"><div class="label">Productivity <span class="status-dot"></span></div><p>Word, Excel, PowerPoint, Access, Power BI</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">03</span><h2>Case Files</h2><div class="rule"></div></div>
+    <div class="case-grid">
+      <div class="case reveal">
+        <div class="case-head"><span>CASE-001</span><span class="tag">SOC HOME LAB</span></div>
+        <div class="case-body">
+          <h3>Windows Authentication Monitoring (Splunk)</h3>
+          <p>Collected and analyzed Windows Security Event Logs, simulating brute-force login attempts to surface suspicious authentication patterns.</p>
+          <div class="evt">EventID <b>4624</b> success · EventID <b>4625</b> failure → SPL queries + dashboards built to flag both</div>
+        </div>
+      </div>
+      <div class="case reveal">
+        <div class="case-head"><span>CASE-002</span><span class="tag">VIRTUAL LAB</span></div>
+        <div class="case-body">
+          <h3>Multi-System Security Lab (Windows & Linux)</h3>
+          <p>Built and maintained a VirtualBox lab simulating real-world environments — configuration, troubleshooting, and basic system hardening across platforms.</p>
+          <div class="evt">Environment: VirtualBox · Windows + Linux guests</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="education">
+  <div class="wrap">
+    <div class="sec-head"><span class="idx">04</span><h2>Education & Certs</h2><div class="rule"></div></div>
+    <div class="twocol">
+      <div>
+        <div class="edu-item reveal">
+          <div class="gpa">GPA 4.0 / 4.0</div>
+          <h3>MS in Cybersecurity</h3>
+          <div class="org">New York University — Tandon School of Engineering · Jan 2026 – Dec 2027</div>
+        </div>
+        <div class="edu-item reveal">
+          <div class="gpa">GPA 3.83 / 4.0 — Magna Cum Laude</div>
+          <h3>BS in Computer Science and Engineering</h3>
+          <div class="org">Daffodil International University, Dhaka · Jan 2020 – Mar 2024</div>
+        </div>
+        <p style="color:#7C8A96; font-size:13px; font-family:var(--mono); margin-top:18px;">Coursework: Network Security · Incident Response · Security Operations · Digital Forensics · Operating Systems · Computer Networks</p>
+      </div>
+      <div class="reveal">
+        <div class="cert"><span>CompTIA Security+ (SY0-701)</span><span class="badge active">VALID THRU 05/2028</span></div>
+        <div class="cert"><span>TryHackMe SOC Level 1</span><span class="badge progress">IN PROGRESS</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" style="border-bottom:none;">
+  <div class="wrap contact">
+    <h2>Open a ticket.</h2>
+    <p>Based in Jamaica, NY — open to IT support and SOC-track opportunities.</p>
+    <div class="contact-links">
+      <a class="btn primary" href="mailto:tma9468@nyu.edu">tma9468@nyu.edu</a>
+      <a class="btn ghost" href="tel:9296037378">(929) 603-7378</a>
+      <a class="btn ghost" href="#">LinkedIn</a>
+      <a class="btn ghost" href="#">Github</a>
+    </div>
+  </div>
+</section>
+
+<footer>// Towhid Alam — uptime since 2020. Built without a CMS.</footer>
+
+<script>
+  // log ticker content
+  const events = [
+    "[OK] svc=helpdesk ticket_closed avg_resolution=10/day",
+    "[ALERT] EventID=4625 failed_login source=internal_lab",
+    "[OK] EventID=4624 success auth=verified",
+    "[OK] endpoint_patch status=complete count=100+",
+    "[OK] vpn_tunnel status=stable protocol=TCP/IP",
+    "[ALERT] brute_force_attempt simulated=true detected=true",
+    "[OK] cert=CompTIA_Security+ status=active expiry=2028-05",
+    "[OK] dns_resolution latency=normal",
+  ];
+  const track = document.getElementById('ticker');
+  const html = events.map(e => {
+    const cls = e.startsWith('[OK]') ? 'ok' : 'warn';
+    return `<span class="${cls}">${e}</span>`;
+  }).join('<span style="color:#3a4450">•</span>');
+  track.innerHTML = html + '<span style="color:#3a4450">•</span>' + html;
+
+  // scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('in');
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // cursor parallax (hero only)
+  const heroEl = document.getElementById('hero');
+  const layers = document.querySelectorAll('.parallax-layer');
+  const glow1 = document.getElementById('glow1');
+  const glow2 = document.getElementById('glow2');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduceMotion && heroEl) {
+    heroEl.addEventListener('mousemove', (e) => {
+      const rect = heroEl.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+
+      layers.forEach(layer => {
+        const depth = parseFloat(layer.dataset.depth) || 8;
+        layer.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+      });
+
+      glow1.style.transform = `translate(${x * 50}px, ${y * 50}px)`;
+      glow2.style.transform = `translate(${-x * 40}px, ${-y * 40}px)`;
+    });
+
+    heroEl.addEventListener('mouseleave', () => {
+      layers.forEach(layer => layer.style.transform = 'translate(0,0)');
+      glow1.style.transform = 'translate(0,0)';
+      glow2.style.transform = 'translate(0,0)';
+    });
+  }
+</script>
+
+</body>
+</html>
